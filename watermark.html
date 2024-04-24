@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head><title>测试水印</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link type="text/css" href="resources/css/reset.css" rel="Stylesheet">
+    <link type="text/css" href="resources/css/default.css" rel="Stylesheet">
+    <link rel="shortcut icon" href="resources/images/favicon_play.ico">
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600" rel="stylesheet">
+<!-- jQuery -->
+<script type="text/javascript" src="http://cdn.anjiu.cn/syAdmin/static/js/jquery.js"></script>
+    <script type="text/javascript">
+        if (location.href.toString().indexOf('file://localhost/') == 0) {
+            location.href = location.href.toString().replace('file://localhost/', 'file:///');
+        }
+    </script>  
+	<!-- <script type="text/javascript" src="http://cdn.anjiu.cn/syAdmin/static/js/watermark.js"></script> -->
+	<script type="text/javascript" >
+	
+		function watermark(settings) { 
+        var defaultSettings = {
+            watermark_txt: "text",
+            watermark_x: 20,  
+            watermark_y: 20,  
+            watermark_rows: 20,  
+            watermark_cols: 20,  
+            watermark_x_space: 100,  
+            watermark_y_space: 50,  
+            watermark_color: '#aaa', 
+            watermark_alpha: 0.4, 
+            watermark_fontsize: '15px', 
+            watermark_font: '寰蒋闆呴粦',  
+            watermark_width: 210,  
+            watermark_height: 80,  
+            watermark_angle: 20  
+        };
+        if (arguments.length === 1 && typeof arguments[0] === "object") {
+            var src = arguments[0] || {};
+            for (key in src) {
+                if (src[key] && defaultSettings[key] && src[key] === defaultSettings[key]) continue;
+                else if (src[key]) defaultSettings[key] = src[key];
+            }
+        }
+        var oTemp = document.createDocumentFragment();
+        //鑾峰彇椤甸潰鏈€澶у搴?
+        var page_width = Math.max(document.body.scrollWidth, document.body.clientWidth);
+        var cutWidth = page_width * 0.0150;
+        var page_width = page_width - cutWidth;
+        //鑾峰彇椤甸潰鏈€澶ч珮搴?
+        var page_height = Math.max(document.body.scrollHeight, document.body.clientHeight) + 450;
+        page_height = Math.max(page_height, window.innerHeight - 30);
+        //濡傛灉灏嗘按鍗板垪鏁拌缃负0锛屾垨姘村嵃鍒楁暟璁剧疆杩囧ぇ锛岃秴杩囬〉闈㈡渶澶у搴︼紝鍒欓噸鏂拌绠楁按鍗板垪鏁板拰姘村嵃x杞撮棿闅?
+        if (defaultSettings.watermark_cols == 0 || (parseInt(defaultSettings.watermark_x + defaultSettings.watermark_width * defaultSettings.watermark_cols + defaultSettings.watermark_x_space * (defaultSettings.watermark_cols - 1)) > page_width)) {
+            defaultSettings.watermark_cols = parseInt((page_width - defaultSettings.watermark_x + defaultSettings.watermark_x_space) / (defaultSettings.watermark_width + defaultSettings.watermark_x_space));
+            defaultSettings.watermark_x_space = parseInt((page_width - defaultSettings.watermark_x - defaultSettings.watermark_width * defaultSettings.watermark_cols) / (defaultSettings.watermark_cols - 1));
+        }
+        //濡傛灉灏嗘按鍗拌鏁拌缃负0锛屾垨姘村嵃琛屾暟璁剧疆杩囧ぇ锛岃秴杩囬〉闈㈡渶澶ч暱搴︼紝鍒欓噸鏂拌绠楁按鍗拌鏁板拰姘村嵃y杞撮棿闅?
+        if (defaultSettings.watermark_rows == 0 || (parseInt(defaultSettings.watermark_y + defaultSettings.watermark_height * defaultSettings.watermark_rows + defaultSettings.watermark_y_space * (defaultSettings.watermark_rows - 1)) > page_height)) {
+            defaultSettings.watermark_rows = parseInt((defaultSettings.watermark_y_space + page_height - defaultSettings.watermark_y) / (defaultSettings.watermark_height + defaultSettings.watermark_y_space));
+            defaultSettings.watermark_y_space = parseInt(((page_height - defaultSettings.watermark_y) - defaultSettings.watermark_height * defaultSettings.watermark_rows) / (defaultSettings.watermark_rows - 1));
+        }
+        var x;
+        var y;
+        for (var i = 0; i < defaultSettings.watermark_rows; i++) {
+            y = defaultSettings.watermark_y + (defaultSettings.watermark_y_space + defaultSettings.watermark_height) * i;
+            for (var j = 0; j < defaultSettings.watermark_cols; j++) {
+                x = defaultSettings.watermark_x + (defaultSettings.watermark_width + defaultSettings.watermark_x_space) * j;
+                var mask_div = document.createElement('div');
+                mask_div.id = 'mask_div' + i + j;
+                mask_div.className = 'mask_div';
+                mask_div.appendChild(document.createTextNode(defaultSettings.watermark_txt));
+                //璁剧疆姘村嵃div鍊炬枩鏄剧ず
+                mask_div.style.webkitTransform = "rotate(-" + defaultSettings.watermark_angle + "deg)";
+                mask_div.style.MozTransform = "rotate(-" + defaultSettings.watermark_angle + "deg)";
+                mask_div.style.msTransform = "rotate(-" + defaultSettings.watermark_angle + "deg)";
+                mask_div.style.OTransform = "rotate(-" + defaultSettings.watermark_angle + "deg)";
+                mask_div.style.transform = "rotate(-" + defaultSettings.watermark_angle + "deg)";
+                mask_div.style.visibility = "";
+                mask_div.style.position = "absolute";
+                mask_div.style.left = x + 'px';
+                mask_div.style.top = y + 'px';
+                mask_div.style.overflow = "hidden";
+                mask_div.style.zIndex = "9999";
+                mask_div.style.pointerEvents = 'none';
+                mask_div.style.opacity = defaultSettings.watermark_alpha;
+                mask_div.style.fontSize = defaultSettings.watermark_fontsize;
+                mask_div.style.fontFamily = defaultSettings.watermark_font;
+                mask_div.style.color = defaultSettings.watermark_color;
+                mask_div.style.textAlign = "center";
+                mask_div.style.width = defaultSettings.watermark_width + 'px';
+                mask_div.style.height = defaultSettings.watermark_height + 'px';
+                mask_div.style.display = "block";
+                oTemp.appendChild(mask_div);
+            };
+        };
+        document.body.appendChild(oTemp);
+    }
+	</script>
+	<script type="text/javascript">
+$(document).ready(function(){
+	var MANAGE_NAME = "杭杭";
+    watermark({"watermark_txt":MANAGE_NAME});
+	})
+	</script>
+	<!-- <script type="text/javascript">
+	function watermark(){
+			var watermarkDiv = document.createElement("div");
+		watermarkDiv.innerHTML = "水印内容";
+		watermarkDiv.style.position = "fixed";
+		watermarkDiv.style.bottom = "10px";
+		watermarkDiv.style.right = "10px";
+		watermarkDiv.style.color = "#cccccc";
+		watermarkDiv.style.fontSize = "14px";
+		watermarkDiv.style.opacity = "0.5";
+		document.body.appendChild(watermarkDiv);
+		}
+	</script> -->
+                </head>
+<body>
+<div style="margin:0 auto;height:1000px;">
+	hello world<svg class="watermark" xmlns="http://www.w3.org/2000/svg" width="200" height="200">
+    <text x="0" y="15" font-size="20" fill="rgba(204,204,204,0.5)">水印内容</text>
+</svg>
+<div>
+</body>
+</html>
